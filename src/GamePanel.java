@@ -1,9 +1,13 @@
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.util.Random;
 
 public class GamePanel extends JPanel implements ActionListener
@@ -21,6 +25,9 @@ public class GamePanel extends JPanel implements ActionListener
     boolean running = false;
     Timer timer;
     Random random;
+
+    String musicPath = "music/song.wav";
+    Clip music;
 
     int[] x = new int[GAME_UNITS];
     int[] y = new int[GAME_UNITS];
@@ -45,15 +52,38 @@ public class GamePanel extends JPanel implements ActionListener
         size = 10;
         delay = 200;
         foodCounter = 0;
-        new GameFrame();
+        direction = 'R';
+        super.paintComponent(this.getGraphics()); //reset the screen
+        startGame();
     }
 
     public void startGame()
     {
+        PlayMusic(musicPath);
         addFood(); //on game start we need to give snake some food
         running = true;
         timer = new Timer((int) delay, this);
         timer.start();
+    }
+
+    private void PlayMusic(String musicPath)
+    {
+        try
+        {
+            File musicFile = new File(musicPath);
+            if(musicFile.exists())
+            {
+                AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicFile);
+                music = AudioSystem.getClip();
+                music.open(audioInput);
+                music.start();
+                music.loop(Clip.LOOP_CONTINUOUSLY);
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println("Error with finding the file");
+        }
     }
 
     public void paintComponent(Graphics g)
@@ -68,13 +98,11 @@ public class GamePanel extends JPanel implements ActionListener
         {
             g.setColor(Color.green);
             g.fillOval(foodX, foodY, BLOCK_SIZE, BLOCK_SIZE);
-
-            for (int i = 0; i < size; i++) {
+            for (int i = 0; i < size; i++)
+            {
                 g.setColor(Color.white);
                 g.fillRect(x[i], y[i], BLOCK_SIZE, BLOCK_SIZE);
             }
-
-
         }
         else
         {
@@ -163,6 +191,7 @@ public class GamePanel extends JPanel implements ActionListener
         if(!running)
         {
             timer.stop();
+            music.stop();
         }
     }
 
@@ -175,7 +204,10 @@ public class GamePanel extends JPanel implements ActionListener
         g.drawString("Game Over", (SCREEN_WIDTH - metrics.stringWidth("Game Over")) / 2, (SCREEN_HEIGHT/2));
         //display score
         g.drawString("Score: " + foodCounter, (SCREEN_WIDTH - metrics.stringWidth("Score: " + foodCounter)) / 2, (g.getFont().getSize()));
+        //restart message
+        g.drawString("Press 'C' to Restart", (SCREEN_WIDTH - metrics.stringWidth("Press 'C' to Restart")) / 2, SCREEN_HEIGHT - (g.getFont().getSize()));
     }
+
     @Override
     public void actionPerformed(ActionEvent e)
     {
@@ -225,7 +257,14 @@ public class GamePanel extends JPanel implements ActionListener
                 }
                 case KeyEvent.VK_C ->
                 {
-                    System.out.println("C Pressed");
+                    timer.stop(); //if we don't stop the timer the snake goes hyper speed
+//                    the reason it will go hyper speed is as the number of timers increases at different times,
+//                    the number of ticks in the overall program will also increase because the timer
+//                    ticks are not synchronized with each other which means that each snake movement
+//                    will occur faster and faster (because more ticks)
+                    music.stop();
+
+
                     resetGame();
                 }
             }
