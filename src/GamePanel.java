@@ -7,7 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
+import java.net.URL;
 import java.util.Random;
 
 public class GamePanel extends JPanel implements ActionListener
@@ -26,7 +26,7 @@ public class GamePanel extends JPanel implements ActionListener
     Timer timer;
     Random random;
 
-    String musicPath = "music/song.wav";
+    String musicPath = "/resources/song.wav";
     Clip music;
 
     int[] x = new int[GAME_UNITS];
@@ -70,15 +70,16 @@ public class GamePanel extends JPanel implements ActionListener
     {
         try
         {
-            File musicFile = new File(musicPath);
-            if(musicFile.exists())
+            URL sound = getClass().getResource(musicPath);
+            AudioInputStream audioInput = null;
+            if (sound != null)
             {
-                AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicFile);
-                music = AudioSystem.getClip();
-                music.open(audioInput);
-                music.start();
-                music.loop(Clip.LOOP_CONTINUOUSLY);
+                audioInput = AudioSystem.getAudioInputStream(sound);
             }
+            music = AudioSystem.getClip();
+            music.open(audioInput);
+            music.start();
+            music.loop(Clip.LOOP_CONTINUOUSLY);
         }
         catch (Exception e)
         {
