@@ -7,18 +7,18 @@
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>
-  <priority>normal</priority>
-  <downloadUrl></downloadUrl>
+  <priority>high</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
   <supportUrl></supportUrl>
   <stayAlive>false</stayAlive>
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
   <icon>C:\Users\fahim\Downloads\snake.ico</icon>
   <jre>
-    <path>%JAVA_HOME%;%PATH%</path>
-    <requiresJdk>false</requiresJdk>
+    <path>%JAVA_HOME%;%PATH%;%EXEDIR%</path>
+    <requiresJdk>true</requiresJdk>
     <requires64Bit>false</requires64Bit>
-    <minVersion>1.4.0</minVersion>
+    <minVersion>1.8.0</minVersion>
     <maxVersion></maxVersion>
   </jre>
 </launch4jConfig>
